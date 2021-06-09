@@ -1,4 +1,5 @@
 // Arduino Controller for Vocaloid by Emma Mann
+// Requires ATmega32u4 (Leonardo/Mega)
 
 // external libraries
 #include <LiquidCrystal.h>
@@ -16,9 +17,9 @@ const int submit = 2;
 const int rs = 9, en = 8, d4 = 10, d5= 11, d6= 12, d7= 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 // pins (analog)
-int lengthChange = 0;
-int consonantValue = 0;
-int vowelValue = 0;
+int length = A0;
+int vowelValue = A1;
+int consonantValue = A2;
 
 void setup() {
   // initialise pins as input
@@ -28,29 +29,41 @@ void setup() {
   pinMode(addY, INPUT);
   pinMode(handakuten, INPUT);
   pinMode(dakuten, INPUT);
-  // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(9600); // serial needed to use analog pins
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  String currentSyllable;
+  String currentLength = DEFAULTLENGTH;
+  String currentPitch = DEFAULTPITCH;
   while (digitalRead(submit) == LOW)
-  {
-    checkPins();
+  { 
+    String newSyllable = checkAnalogPins();
+    if (newSyllable != ""){
+      // don't update syllable if there was invalid input
+      currentSyllable = newSyllable;
+    }
+    currentLength = updateLength();
+    bool pitchUpPress = digitalRead(pitchUp) == HIGH;
+    bool pitchDownPress = digitalRead(pitchDown) == HIGH;
+    if (pitchUpPress || pitchDownPress)
+    {
+      currentPitch = updatePitch(pitchUpPress);
+    }
+    
   }
   // submit button pressed
-  addNote();
+  addNote(currentSyllable, currentLength, currentPitch);
 }
 
-void addNote(){
+void addNote(String syllable, String length, String pitch){
   // adds note to v5 editor
-  // maybe use final data from checkPins() in loop
-  // so not needed to call function in here
-  checkPins();
+  return;
 }
 
-// won't be void but do not yet know how data will be handled
-void checkPins(){
+// TODO: is a string a good output?
+String checkAnalogPins(){
+  String output = "";
   // checks pins
   char consonant = getConsonant();
   delay(100); // for stability
@@ -58,13 +71,40 @@ void checkPins(){
   delay(100);
   if (consonant != 'n' && vowel == ' '){
     // will have to break
-    return;
+    return "";
   }
   if (consonant == 'h' && vowel == 'u'){
     consonant = 'f';
   }
+  // TODO: what vowels don't work with y?
+  if (digitalRead(addY) == HIGH){
+    output = consonant + "y" + vowel;
+  } else {
+    output = consonant + vowel;
+  }
+  return output;
 }
 
+String updatePitch(bool pitchUp){
+  // TODO: how to update pitch
+  String output;
+  if (pitchUp){
+    // pitch up
+    output = "C3";
+  } else {
+    // pitch down
+    output = "C3";
+  }
+  return output;
+}
+
+String updateLength(){
+  // TODO: how to update length
+  int temp = analogRead(length);
+  return "1/8";
+}
+
+// TODO: (here & on getVowel) check values & make switch statements
 char getConsonant(){
   int temp = analogRead(consonantValue);
   Serial.println(temp);
