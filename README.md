@@ -1,6 +1,8 @@
-# Arduino Controller for Vocaloid
+# Arduino Voice Synth Controller
 
-The purpose of this project is to create an Arduino Controller to allow the user to input Japanese notes into Vocaloid 5. My current priority is to get it to work with Arduino boards based on the ATmega32u4 - i.e. the Leonardo & Mega. I hope to eventually create a version to work with other boards such as the Uno.
+(Formally Arduino Controller For Vocaloid)
+
+The purpose of this project is to create an Arduino Controller to allow the user to input Japanese notes into various voice synthesiser software. My current priority is to get it to work with Arduino boards based on the ATmega32u4 - i.e. the Leonardo & Mega. I hope to eventually create a version to work with other boards such as the Uno. I am also planning to first implement it to work with Synthesizer V, however I still intend on creating a Vocaloid 5 version in the future.
 
 ## Current Setup (WIP)
 The circuit currently requires:
