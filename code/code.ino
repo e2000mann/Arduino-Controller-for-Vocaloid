@@ -1,4 +1,4 @@
-// Arduino Controller for Vocaloid by Emma Mann
+// Arduino Voice Synth Controller by Emma Mann
 // Requires ATmega32u4 (Leonardo/Mega)
 
 // external libraries
