@@ -5,7 +5,9 @@
 #include <LiquidCrystal.h>
 
 // global variables
-const String DEFAULTPITCH = "C3", DEFAULTLENGTH = "1/8";
+// pitch uses midi numbers (60 = C4)
+const int DEFAULTPITCH = 60;
+const float DEFAULTLENGTH = 0.125;
 // pins (digital)
 // pitch pins
 const int pitchUp = 0, pitchDown = 1;
@@ -34,8 +36,8 @@ void setup() {
 
 void loop() {
   String currentSyllable;
-  String currentLength = DEFAULTLENGTH;
-  String currentPitch = DEFAULTPITCH;
+  float currentLength = DEFAULTLENGTH;
+  int currentPitch = DEFAULTPITCH;
   while (digitalRead(submit) == LOW)
   { 
     String newSyllable = checkAnalogPins();
@@ -48,7 +50,7 @@ void loop() {
     bool pitchDownPress = digitalRead(pitchDown) == HIGH;
     if (pitchUpPress || pitchDownPress)
     {
-      currentPitch = updatePitch(pitchUpPress);
+      currentPitch = updatePitch(currentPitch, pitchUpPress);
     }
     
   }
@@ -56,7 +58,7 @@ void loop() {
   addNote(currentSyllable, currentLength, currentPitch);
 }
 
-void addNote(String syllable, String length, String pitch){
+void addNote(String syllable, float length, int pitch){
   // adds note to v5 editor
   return;
 }
@@ -85,23 +87,21 @@ String checkAnalogPins(){
   return output;
 }
 
-String updatePitch(bool pitchUp){
-  // TODO: how to update pitch
-  String output;
+int updatePitch(int curPitch, bool pitchUp){
   if (pitchUp){
     // pitch up
-    output = "C3";
+    curPitch += 1;
   } else {
     // pitch down
-    output = "C3";
+    curPitch -= 1;
   }
-  return output;
+  return curPitch;
 }
 
-String updateLength(){
+float updateLength(){
   // TODO: how to update length
   int temp = analogRead(length);
-  return "1/8";
+  return 0.125;
 }
 
 // TODO: (here & on getVowel) check values & make switch statements
