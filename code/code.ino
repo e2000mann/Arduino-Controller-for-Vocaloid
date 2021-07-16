@@ -8,6 +8,7 @@
 // pitch uses midi numbers (60 = C4)
 const int DEFAULTPITCH = 60;
 const float DEFAULTLENGTH = 0.125;
+const String DEFAULTSYLLABLE = "a";
 // pins (digital)
 // pitch pins
 const int pitchUp = 0, pitchDown = 1;
@@ -16,7 +17,7 @@ const int addY = 3, handakuten = 4, dakuten = 5;
 // submit pin
 const int submit = 2;
 // lcd panel
-const int rs = 9, en = 8, d4 = 10, d5= 11, d6= 12, d7= 13;
+const int rs = 8, en = 9, d4 = 10, d5= 11, d6= 12, d7= 13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 // pins (analog)
 int length = A0;
@@ -32,10 +33,13 @@ void setup() {
   pinMode(handakuten, INPUT);
   pinMode(dakuten, INPUT);
   Serial.begin(9600); // serial needed to use analog pins
+
+  lcd.begin(16, 2);
+  lcd.print("hello, world!");
 }
 
 void loop() {
-  String currentSyllable;
+  String currentSyllable = DEFAULTSYLLABLE;
   float currentLength = DEFAULTLENGTH;
   int currentPitch = DEFAULTPITCH;
   while (digitalRead(submit) == LOW)
@@ -53,6 +57,8 @@ void loop() {
       currentPitch = updatePitch(currentPitch, pitchUpPress);
     }
     
+    setlcd(currentSyllable, currentLength, currentPitch);
+
   }
   // submit button pressed
   addNote(currentSyllable, currentLength, currentPitch);
@@ -61,6 +67,25 @@ void loop() {
 void addNote(String syllable, float length, int pitch){
   // adds note to v5 editor
   return;
+}
+
+void setlcd(String syllable, float length, int pitch){
+
+  Serial.print(syllable);
+
+  // convert syllable into char array
+  char syBuffer[3];
+  syllable.toCharArray(syBuffer, 3);
+
+  // convert float into 3dp string (temp)
+  char lenBuffer[10];
+  dtostrf(length, 3, 3, lenBuffer);
+
+  char output[32];
+  snprintf(output, 32, "%s %s %d", syBuffer, lenBuffer, pitch);
+
+  lcd.setCursor(0, 1);
+  lcd.print(output);
 }
 
 // TODO: is a string a good output?
