@@ -12,9 +12,9 @@ const float DEFAULTLENGTH = 0.125;
 const float LENGTHS[7] = {0.0625, 0.125, 0.25, 0.5, 1, 2, 4};
 const int CURLENGTHVALUE = 0;
 
-const String DEFAULTSYLLABLE = "a";
+const String DEFAULTSYLLABLE[2] = {"","a"} ;
 
-String CURRENTSYLLABLE = DEFAULTSYLLABLE;
+String CURRENTSYLLABLE[2] = {DEFAULTSYLLABLE[0], DEFAULTSYLLABLE[1]};
 float CURRENTLENGTH = DEFAULTLENGTH;
 int CURRENTPITCH = DEFAULTPITCH;
 
@@ -46,7 +46,7 @@ void setup() {
   Serial.begin(9600); // serial needed to use analog pins
 
   // initialise lcd
-  analogWrite(contrast, 50);
+  analogWrite(contrast, 75);
   lcd.begin(16, 2);
   lcd.print("current note:");
 }
@@ -66,8 +66,7 @@ void loop() {
     bool updateVowel = vowelRead > 160;
 
     int lengthRead = analogRead(lengthValue);
-    int range[2] = {CURLENGTHVALUE - 50, CURLENGTHVALUE + 50};
-    bool updateLength = range[0] > lengthRead || range[1] < lengthRead;
+    bool updateLength = (CURLENGTHVALUE - 100) < lengthRead || (CURLENGTHVALUE + 100) > lengthRead;
 
     if (updateConst || updateVowel || updateLength){
       update(updateConst, updateVowel, updateLength);
@@ -99,7 +98,7 @@ void loop() {
   // }
 }
 
-void addNote(String syllable, float length, int pitch){
+void addNote(String* syllable, float length, int pitch){
   // adds note to editor
   // TODO: how to connect Arduino code to synth v plugin?
   lcd.clear();
@@ -107,11 +106,15 @@ void addNote(String syllable, float length, int pitch){
   delay(1000); // so user can see submission note
 }
 
-void setlcd(String syllable, float length, int pitch){
+void setlcd(String* syllable, float length, int pitch){
   // convert syllable into char array
   char syBuffer[3];
-  strcpy(syBuffer, syllable.c_str());
-  // syllable.toCharArray(syBuffer, 3);
+  strcpy(syBuffer, syllable[0].c_str());
+  if (syBuffer[2] == ""){
+    syBuffer[2] = syllable[1][0];
+  } else {
+    syBuffer[3] = syllable[1][0];
+  }
 
   // convert float into 3dp string (temp)
   char lenBuffer[10];
@@ -127,8 +130,18 @@ void setlcd(String syllable, float length, int pitch){
 }
 
 void update(bool updateConst, bool updateVowel, bool updateLength){
-
+  if (updateConst){
+    Serial.println("update consonant");
+  }
+  if (updateVowel){
+    Serial.println("update vowel");
+  }
+  if (updateLength){
+    Serial.println("update length");
+  }
+  // Serial.println("Update");
   setlcd(CURRENTSYLLABLE, CURRENTLENGTH, CURRENTPITCH);
+  delay(200);
 }
 
 // TODO: is a string a good output?
