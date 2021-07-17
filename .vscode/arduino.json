@@ -1,5 +1,6 @@
 {
     "board": "arduino:avr:leonardo",
     "programmer": "arduino:avrisp",
-    "sketch": "code\\code.ino"
+    "sketch": "code\\code.ino",
+    "port": "COM7"
 }
